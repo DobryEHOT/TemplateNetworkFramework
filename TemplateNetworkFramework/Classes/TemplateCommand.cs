@@ -61,7 +61,7 @@ namespace TemplateNetworkFramework.Classes
         protected override void OnGetCommandClientLogic(NetClient client, string message)
         {
             //DebugAdapter.Log("TemplateDisconnect DO");
-            client.AbortClient(client.info);
+            client.AbortClient();
         }
 
         protected override void OnGetCommandServerLogic(NetServer server, string message)

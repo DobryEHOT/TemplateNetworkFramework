@@ -11,10 +11,10 @@ namespace TemplateNetworkFramework.Classes
     public class NetServer
     {
 
-        public Dictionary<string, ClientInfo> clients { get; private set; }
+        public Dictionary<string, ClientInfo> Clients { get; private set; }
         public IPAddress IP { get; private set; }
         public int Port { get; private set; }
-        public string serverPassword { get; private set; } = "";
+        public string ServerPassword { get; private set; } = "";
 
         private TcpListener listner;
         private Sendner sendner;
@@ -30,7 +30,7 @@ namespace TemplateNetworkFramework.Classes
             Port = port;
 
             listner = new TcpListener(IP, Port);
-            clients = new Dictionary<string, ClientInfo>();
+            Clients = new Dictionary<string, ClientInfo>();
             sendner = new Sendner();
             commandController = new CommandController();// null);
         }
@@ -38,9 +38,9 @@ namespace TemplateNetworkFramework.Classes
         public NetServer(IPAddress ip, int port, string serverPassword) : this(ip, port)
         {
             if (serverPassword != null && serverPassword != "")
-                this.serverPassword = serverPassword.GetHashCode().ToString();
+                this.ServerPassword = serverPassword.GetHashCode().ToString();
             else
-                this.serverPassword = "";
+                this.ServerPassword = "";
         }
 
         public NetServer(IPAddress ip, int port, string serverPassword, List<TemplateCommand> customCommand) : this(ip, port, serverPassword)
@@ -61,17 +61,17 @@ namespace TemplateNetworkFramework.Classes
             isWorking = true;
 
             DebugAdapter.Log("Server is running");
-            DebugAdapter.Log($"Server password: {serverPassword}");
+            DebugAdapter.Log($"Server password: {ServerPassword}");
 
 
             listner.Start();
             sendner.Start();
-            sendner.asynFindingClient(listner, serverPassword, allocFindedClient, allocBreackServer);
+            sendner.asynFindingClient(listner, ServerPassword, allocFindedClient, allocBreackServer);
         }
 
         public void StopServer()
         {
-            foreach (var clientInfo in clients)
+            foreach (var clientInfo in Clients)
             {
                 clientInfo.Value.ClientTCP.GetStream().Close();
                 clientInfo.Value.ClientTCP.Close();
@@ -101,7 +101,7 @@ namespace TemplateNetworkFramework.Classes
 
         public void SendCommandFromAllClients(MessageDescript descript)
         {
-            foreach (var client in clients)
+            foreach (var client in Clients)
             {
                 sendner.asynSendMessageFromClient(descript, client.Value, allocSendedMessageFromClient, allocDropClientSendMessage);
             }
@@ -109,9 +109,9 @@ namespace TemplateNetworkFramework.Classes
 
         public void DisconnectClient(string name)
         {
-            if (clients.ContainsKey(name))
+            if (Clients.ContainsKey(name))
             {
-                var info = clients[name].ClientTCP;
+                var info = Clients[name].ClientTCP;
                 try
                 {
                     info.GetStream().Close();
@@ -120,14 +120,14 @@ namespace TemplateNetworkFramework.Classes
                 catch { }
                 finally
                 {
-                    clients.Remove(name);
+                    Clients.Remove(name);
                 }
             }
         }
 
         private void allocFindedClient(ClientInfo client)
         {
-            clients.Add(client.Name, client);
+            Clients.Add(client.Name, client);
             DebugAdapter.Log($"Client \"{client.Name}\" has join to server");
 
             sendner.asynListeningClient(client, allocSendedMessageClientFromServer, allocDropClientSendMessage);

@@ -32,7 +32,7 @@ namespace TemplateNetworkFramework.Classes
     public class NetClient
     {
         public ClientInfo info { get; private set; }
-        public bool isWork { get; private set; } = false;
+        public bool isWorking { get; private set; } = false;
 
         private Sendner sendner;
         private NetworkStream stream;
@@ -60,7 +60,7 @@ namespace TemplateNetworkFramework.Classes
 
         public void Connect(string ip, int port)
         {
-            if (isWork)
+            if (isWorking)
             {
                 DebugAdapter.Log("You already connect");
                 return;
@@ -70,7 +70,7 @@ namespace TemplateNetworkFramework.Classes
             info.ClientTCP.Connect(ip, port);
             stream = info.ClientTCP.GetStream();
             sendner.Start();
-            isWork = true;
+            isWorking = true;
             SendCommand<TemplateConnect>(info.Name + " " + info.hashPassword);
             sendner.asynListeningClient(info, allocServerSended, allocToDrop);
         }
@@ -93,7 +93,7 @@ namespace TemplateNetworkFramework.Classes
 
         public void SendCommand<T>(string message) where T : TemplateCommand
         {
-            if (!isWork)
+            if (!isWorking)
             {
                 allocToDrop(info, new Exception("Client dosen't connect"));
                 return;
@@ -120,7 +120,7 @@ namespace TemplateNetworkFramework.Classes
             SendCommand<T>("");
         }
 
-        public void AbortClient(ClientInfo info)
+        public void AbortClient()
         {
             try
             {
@@ -132,7 +132,7 @@ namespace TemplateNetworkFramework.Classes
             { }
             finally
             {
-                isWork = false;
+                isWorking = false;
                 DebugAdapter.Log("Client disconnected");
             }
         }
