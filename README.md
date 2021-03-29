@@ -3,11 +3,11 @@
 TCP соединение.
 
 ## Оглавление
-  * [NetServer](https://github.com/DobryEHOT/TemplateNetworkFramework###NetServer)
-  * [NetClient](https://github.com/DobryEHOT/TemplateNetworkFramework###NetClient)
+  * [NetServer](https://github.com/DobryEHOT/TemplateNetworkFramework#netserver)
+  * [NetClient](https://github.com/DobryEHOT/TemplateNetworkFramework#netclient)
   
-  * [TNFManager](https://github.com/DobryEHOT/TemplateNetworkFramework###TNFManager)
-  * [LoopIterator](https://github.com/DobryEHOT/TemplateNetworkFramework###LoopIterator)
+  * [TNFManager](https://github.com/DobryEHOT/TemplateNetworkFramework#tnfmanager)
+  * [LoopIterator](https://github.com/DobryEHOT/TemplateNetworkFramework#loopiterator)
 ------------
 
 ### NetServer
