@@ -52,6 +52,7 @@
     <Compile Include="Classes\TemplateNetworkFramework.cs" />
     <Compile Include="Classes\Tools\LibraryTemplates.cs" />
     <Compile Include="Classes\Tools\LoopIterator.cs" />
+    <Compile Include="Classes\Tools\QueueThreadProtected.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

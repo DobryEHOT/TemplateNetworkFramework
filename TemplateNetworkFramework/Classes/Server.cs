@@ -95,7 +95,7 @@ namespace TemplateNetworkFramework.Classes
             if (buffer == null)
                 return;
 
-            var descripte = commandController.GetDescriptMessage(buffer);
+            var descripte = commandController.GetDescriptWhithCommands(buffer, this, null);//   GetDescriptMessage
             SendCommandFromAllClients(descripte);
         }
 
@@ -111,11 +111,10 @@ namespace TemplateNetworkFramework.Classes
         {
             if (Clients.ContainsKey(name))
             {
-                var info = Clients[name].ClientTCP;
+                var info = Clients[name];
                 try
                 {
-                    info.GetStream().Close();
-                    info.Close();
+                    CloseClient(info);
                 }
                 catch { }
                 finally
@@ -125,8 +124,24 @@ namespace TemplateNetworkFramework.Classes
             }
         }
 
+        private void CloseClient(ClientInfo client)
+        {
+            try
+            {
+                client.ClientTCP.GetStream().Close();
+                client.ClientTCP.Close();
+            }
+            catch { }
+        }
+
         private void allocFindedClient(ClientInfo client)
         {
+            if (Clients.ContainsKey(client.Name))
+            {
+                CloseClient(client);
+                return;
+            }
+            
             Clients.Add(client.Name, client);
             DebugAdapter.Log($"Client \"{client.Name}\" has join to server");
 
@@ -155,6 +170,7 @@ namespace TemplateNetworkFramework.Classes
         private void allocSendedMessageClientFromServer(ClientInfo client, byte[] buffer)
         {
             var descript = commandController.GetDescriptWhithCommands(buffer, this, null);
+
             if (descript == null)
             {
                 DebugAdapter.Log($"Server take brake message from {client.Name}");

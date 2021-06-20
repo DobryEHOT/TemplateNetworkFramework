@@ -76,6 +76,7 @@ namespace TemplateNetworkFramework.Classes
 
         protected override void OnGetCommandClientLogic(NetClient client, string message)
         {
+            
         }
 
 

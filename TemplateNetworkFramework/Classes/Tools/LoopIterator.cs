@@ -17,15 +17,16 @@ namespace TemplateNetworkFramework.Classes.Tools
 
         public void AddTask(InfoMethodLoop info)
         {
-            methods.Enqueue(info);
+            lock (methods)
+                methods.Enqueue(info);
         }
 
         public void Update()
         {
-            if (methods.Count > 0)
-            {
-                methods.Dequeue().DoMethod();
-            }
+            lock (methods)
+                while (methods.Count > 0)
+                    methods.Dequeue().DoMethod();
+
         }
     }
 

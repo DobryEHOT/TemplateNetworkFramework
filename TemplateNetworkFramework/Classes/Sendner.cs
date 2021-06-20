@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TemplateNetworkFramework.Classes.Tools;
 
 namespace TemplateNetworkFramework.Classes
 {
@@ -12,12 +13,14 @@ namespace TemplateNetworkFramework.Classes
     {
         public NetworkStream stream { get; set; }
 
-        private Queue<InfoSendRecvest> sendRecvests = new Queue<InfoSendRecvest>();
+        private QueueThreadProtected<InfoSendRecvest> sendRecvests = new QueueThreadProtected<InfoSendRecvest>();
         private List<Thread> threads = new List<Thread>();
         private bool isWork = false;
-        static object locker = new object();
+        readonly object locker = new object();
+        readonly object locker2 = new object();
         private bool sendingNow = false;
         private int tikeRate = 1000;
+
         public int TickRate
         {
             get
@@ -61,6 +64,7 @@ namespace TemplateNetworkFramework.Classes
         public void asynSendMessageFromClient(MessageDescript descript, ClientInfo client, Action<ClientInfo, MessageDescript> allocToSendedMessage, Action<ClientInfo, Exception> allocToDropSendClient)
         {
             InfoSendRecvest info = new InfoSendRecvest(descript, client, allocToSendedMessage, allocToDropSendClient);
+
 
             sendRecvests.Enqueue(info);
 
@@ -229,12 +233,19 @@ namespace TemplateNetworkFramework.Classes
 
         private void SendingQueue()
         {
+
             do
             {
-                var info = sendRecvests.Dequeue();
-                SendMessage(info.Descript, info.Client, info.AllocToSendedMessage, info.AllocToDropSendClient);
+
+                var info = new InfoSendRecvest(null, null, null, null);
+                if (sendRecvests.TryDequeue(out info))
+                    SendMessage(info.Descript, info.Client, info.AllocToSendedMessage, info.AllocToDropSendClient);
+                else
+                    return;
+
             }
-            while (sendRecvests.Count != 0);
+            while (sendRecvests.Count() != 0);
+
 
             sendingNow = false;
         }
